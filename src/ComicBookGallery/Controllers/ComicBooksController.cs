@@ -1,4 +1,5 @@
-﻿using ComicBookGallery.Models;
+﻿using ComicBookGallery.Data;
+using ComicBookGallery.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -9,6 +10,13 @@ namespace ComicBookGallery.Controllers
 {
     public class ComicBooksController : Controller
     {
+        private ComicBookRepository _comicBookRepository = null;
+
+        public ComicBooksController()
+        {
+            _comicBookRepository = new ComicBookRepository();
+        }
+
         public ActionResult DetailOld()
         {
 
@@ -30,24 +38,19 @@ namespace ComicBookGallery.Controllers
 
         }
 
-        public ActionResult Detail()
+        public ActionResult Detail(int? id)
         {
-            var comicBook = new ComicBook()
+            if (id == null)
             {
-                SeriesTitle = "The Amazing Spider-Man",
-                IssueNumber = 700,
-                DescriptionHtml = "<p>Final issue! Witness the final hours of Doctor Octopus' life and his one, " +
-                        "last, great act of revenge! Even if Spider-Man survives... <strong>will Peter Parker?</strong></p>",
-                Artists = new Artist[]
-                {
-                    new Artist() { Name = "Dan Slott", Role = "Script"  },
-                    new Artist() { Name = "Humberto Ramos", Role = "Pencils"  },
-                    new Artist() { Name = "Victor Olazaba", Role = "Inks"  },
-                    new Artist() { Name = "Edgar Delgado", Role = "Colors"  },
-                    new Artist() { Name = "Chris Eliopoulos", Role = "Letters"  }
-                }
+                return HttpNotFound();
+            }
 
-         };
+            var comicBook = _comicBookRepository.GetComicBook((int) id);
+
+            if (comicBook == null)
+            {
+                return HttpNotFound();
+            }
             /*
             ViewBag.SeriesTitle = "The Amazing Spider-Man";
             ViewBag.IssueNumber = 700;
